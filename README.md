@@ -3,668 +3,343 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trading P&L Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>TradeDesk — Professional P&L Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3d;
-    --green: #00ff87;
-    --red: #ff3d6e;
-    --blue: #4d9fff;
-    --yellow: #ffd166;
-    --purple: #b388ff;
-    --text: #e8e8f0;
-    --muted: #6b6b8a;
-  }
+:root {
+  --bg: #080810;
+  --bg1: #0d0d1a;
+  --bg2: #111120;
+  --bg3: #161628;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --green: #0fea8e;
+  --green-dim: rgba(15,234,142,0.12);
+  --green-glow: rgba(15,234,142,0.25);
+  --red: #ff4565;
+  --red-dim: rgba(255,69,101,0.12);
+  --blue: #3d8bff;
+  --blue-dim: rgba(61,139,255,0.12);
+  --amber: #ffb547;
+  --amber-dim: rgba(255,181,71,0.12);
+  --violet: #a78bfa;
+  --violet-dim: rgba(167,139,250,0.12);
+  --text: #f0f0f8;
+  --text2: #9898b0;
+  --text3: #5a5a72;
+  --r: 16px;
+  --r-sm: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.35;}
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;}
+.orb1{width:700px;height:700px;background:rgba(15,234,142,0.035);top:-250px;right:-250px;}
+.orb2{width:600px;height:600px;background:rgba(61,139,255,0.035);bottom:-200px;left:-200px;}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* Sidebar */
+.sidebar{width:72px;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:20px 0;gap:6px;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.logo{width:40px;height:40px;background:var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-family:'Bebas Neue',sans-serif;font-size:17px;color:#000;letter-spacing:1px;flex-shrink:0;}
+.nav{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:var(--text3);font-size:17px;border:none;background:transparent;position:relative;flex-shrink:0;}
+.nav:hover{background:var(--bg3);color:var(--text2);}
+.nav.active{background:var(--green-dim);color:var(--green);}
+.nav.active::before{content:'';position:absolute;left:-4px;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--green);border-radius:0 2px 2px 0;}
+.tip{position:absolute;left:54px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:11px;font-weight:500;padding:5px 11px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;font-family:'JetBrains Mono',monospace;}
+.nav:hover .tip{opacity:1;}
+.div{width:30px;height:1px;background:var(--border);margin:6px 0;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* Main */
+.main{margin-left:72px;flex:1;display:flex;flex-direction:column;}
+.topbar{height:62px;background:rgba(8,8,16,.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50;}
+.pg-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2.5px;line-height:1;}
+.pg-sub{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.tr{display:flex;align-items:center;gap:10px;}
+.live{display:flex;align-items:center;gap:6px;padding:5px 13px;background:var(--green-dim);border:1px solid rgba(15,234,142,.2);border-radius:20px;font-size:10px;font-weight:600;color:var(--green);letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+.ldot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.dc{padding:5px 13px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-size:10px;color:var(--text2);font-family:'JetBrains Mono',monospace;}
 
-  /* Grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: 
-      linear-gradient(rgba(77,159,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(77,159,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* Content */
+.content{padding:24px 28px;flex:1;}
+.section{display:none;animation:fi .3s ease;}
+.section.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-  .container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
+/* Stats */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;transition:all .25s;cursor:default;}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 16px 48px rgba(0,0,0,.35);}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;opacity:.7;}
+.sc.cg::after{background:linear-gradient(90deg,transparent,var(--green),transparent);}
+.sc.cr::after{background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.sc.cb::after{background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+.sc.ca::after{background:linear-gradient(90deg,transparent,var(--amber),transparent);}
+.sc.cv::after{background:linear-gradient(90deg,transparent,var(--violet),transparent);}
+.si{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:12px;}
+.cg .si{background:var(--green-dim);}
+.cr .si{background:var(--red-dim);}
+.cb .si{background:var(--blue-dim);}
+.ca .si{background:var(--amber-dim);}
+.cv .si{background:var(--violet-dim);}
+.sl{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:7px;font-family:'JetBrains Mono',monospace;}
+.sv{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:500;line-height:1;margin-bottom:5px;letter-spacing:-.5px;}
+.cg .sv{color:var(--green)}.cr .sv{color:var(--red)}.cb .sv{color:var(--blue)}.ca .sv{color:var(--amber)}.cv .sv{color:var(--violet)}
+.ss{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
 
-  /* Header */
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 0 30px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 30px;
-  }
+/* Grid */
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:18px;}
+.g1{margin-bottom:18px;}
 
-  .logo {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: -1px;
-  }
+/* Card */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.ct{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.cb2{padding:20px;}
 
-  .logo span { color: var(--green); }
+/* Period */
+.pg{display:flex;gap:4px;}
+.pb{padding:4px 10px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+.pb:hover,.pb.active{background:var(--bg3);color:var(--green);border-color:rgba(15,234,142,.3);}
 
-  .header-right { display: flex; gap: 12px; align-items: center; }
+/* Donut */
+.di{display:flex;gap:20px;align-items:center;}
+.dcw{position:relative;flex-shrink:0;}
+.dcc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.dcv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:var(--text);}
+.dcl{font-size:8px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+.dl{flex:1;display:flex;flex-direction:column;gap:8px;}
+.lr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg3);border-radius:var(--r-sm);border:1px solid var(--border);transition:border-color .2s;}
+.lr:hover{border-color:var(--border2);}
+.ll{display:flex;align-items:center;gap:8px;}
+.lbar{width:3px;height:18px;border-radius:2px;}
+.lname{font-size:11px;font-weight:500;color:var(--text2);}
+.lpct{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);}
+.lval{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;}
 
-  .badge {
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    font-family: 'Space Mono', monospace;
-    letter-spacing: 1px;
-  }
+/* Table */
+.tc{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+thead th{padding:11px 14px;text-align:left;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.025);transition:background .15s;}
+tbody tr:hover{background:rgba(255,255,255,.02);}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:12px 14px;font-size:12px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:5px;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-family:'DM Sans',sans-serif;}
+.to{background:var(--violet-dim);color:var(--violet);}
+.te{background:var(--blue-dim);color:var(--blue);}
+.tco{background:var(--amber-dim);color:var(--amber);}
+.tb{color:var(--green);font-weight:600;}
+.ts{color:var(--red);font-weight:600;}
+.pp{color:var(--green);font-weight:500;}
+.pn{color:var(--red);font-weight:500;}
+.nt{color:var(--text3);font-size:10px;}
+.rn{color:var(--text3);font-size:10px;}
+.db{width:26px;height:26px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.db:hover{background:var(--red-dim);color:var(--red);border-color:rgba(255,69,101,.3);}
+.empty{text-align:center;padding:56px 20px;color:var(--text3);}
+.ei{font-size:28px;margin-bottom:10px;opacity:.4;}
+.et{font-size:12px;font-family:'JetBrains Mono',monospace;}
 
-  .badge-live { background: rgba(0,255,135,0.15); color: var(--green); border: 1px solid rgba(0,255,135,0.3); }
-  .badge-date { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+/* Filter */
+.fb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.fs{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 13px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;outline:none;cursor:pointer;transition:border-color .2s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%235a5a72' d='M5 7L1 2h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;}
+.fs:focus{border-color:var(--blue);}
+.fs option{background:var(--bg2);}
 
-  /* Tabs */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--surface);
-    padding: 6px;
-    border-radius: 12px;
-    margin-bottom: 28px;
-    border: 1px solid var(--border);
-    width: fit-content;
-  }
+/* Form */
+.ft{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border);}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px;margin-bottom:22px;}
+.fl{display:block;font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:7px;font-family:'JetBrains Mono',monospace;}
+.fi,.fse{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:all .2s;}
+.fi:focus,.fse:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-dim);}
+.fi::placeholder{color:var(--text3);}
+.fse option{background:var(--bg3);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;background:var(--green);color:#000;border:none;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:all .2s;box-shadow:0 4px 20px var(--green-glow);}
+.btn:hover{opacity:.85;transform:translateY(-1px);box-shadow:0 6px 28px var(--green-glow);}
 
-  .tab {
-    padding: 10px 24px;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
+/* Seg header */
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.shicon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.shname{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;line-height:1;}
+.shdesc{font-size:11px;color:var(--text3);margin-top:2px;}
 
-  .tab.active {
-    background: var(--surface2);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
+/* Toast */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--bg3);border:1px solid var(--green);border-radius:var(--r-sm);padding:11px 18px;font-size:12px;color:var(--green);font-family:'JetBrains Mono',monospace;z-index:9998;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.toast.show{transform:translateY(0);opacity:1;}
 
-  .tab:hover:not(.active) { color: var(--text); }
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px;}
 
-  /* Section */
-  .section { display: none; }
-  .section.active { display: block; }
-
-  /* Stats Grid */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-
-  .stat-card:hover { border-color: var(--blue); }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
-  .stat-card.green::before { background: var(--green); }
-  .stat-card.red::before { background: var(--red); }
-  .stat-card.blue::before { background: var(--blue); }
-  .stat-card.yellow::before { background: var(--yellow); }
-  .stat-card.purple::before { background: var(--purple); }
-
-  .stat-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-
-  .stat-value {
-    font-family: 'Space Mono', monospace;
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 6px;
-  }
-
-  .stat-sub {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-  }
-
-  .green-text { color: var(--green); }
-  .red-text { color: var(--red); }
-  .blue-text { color: var(--blue); }
-  .yellow-text { color: var(--yellow); }
-  .purple-text { color: var(--purple); }
-
-  /* Charts Row */
-  .charts-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-  }
-
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  /* Chart Canvas */
-  .chart-wrap { position: relative; }
-
-  canvas { width: 100% !important; }
-
-  /* Trade Table */
-  .table-wrap { overflow-x: auto; }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-  }
-
-  thead th {
-    text-align: left;
-    padding: 12px 16px;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
-    border-bottom: 1px solid var(--border);
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-  }
-
-  tbody tr {
-    border-bottom: 1px solid rgba(42,42,61,0.5);
-    transition: background 0.15s;
-    cursor: pointer;
-  }
-
-  tbody tr:hover { background: var(--surface2); }
-
-  tbody td { padding: 14px 16px; }
-
-  .segment-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    font-family: 'Syne', sans-serif;
-  }
-
-  .tag-options { background: rgba(179,136,255,0.15); color: var(--purple); }
-  .tag-equity { background: rgba(77,159,255,0.15); color: var(--blue); }
-  .tag-commodity { background: rgba(255,209,102,0.15); color: var(--yellow); }
-
-  .pnl-pos { color: var(--green); }
-  .pnl-neg { color: var(--red); }
-
-  /* Add Trade Form */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
-    margin-bottom: 16px;
-  }
-
-  .form-group label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .form-group input,
-  .form-group select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .form-group input:focus,
-  .form-group select:focus { border-color: var(--blue); }
-
-  .form-group select option { background: var(--surface2); }
-
-  .btn {
-    padding: 12px 28px;
-    border-radius: 8px;
-    border: none;
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: var(--green);
-    color: #000;
-  }
-
-  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
-
-  .btn-danger {
-    background: rgba(255,61,110,0.15);
-    color: var(--red);
-    border: 1px solid rgba(255,61,110,0.3);
-    padding: 8px 14px;
-    font-size: 12px;
-  }
-
-  /* Period selector */
-  .period-btns { display: flex; gap: 6px; }
-  .period-btn {
-    padding: 4px 12px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
-  }
-  .period-btn.active, .period-btn:hover {
-    background: var(--surface2);
-    color: var(--text);
-    border-color: var(--blue);
-  }
-
-  /* Donut */
-  .donut-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .legend { width: 100%; }
-
-  .legend-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-
-  .legend-label { display: flex; align-items: center; gap: 10px; color: var(--muted); }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .charts-row { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--surface); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-
-  .filter-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .filter-select {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 14px;
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
-  }
+@media(max-width:1100px){.sg{grid-template-columns:repeat(3,1fr);}.g2{grid-template-columns:1fr;}}
+@media(max-width:700px){.sg{grid-template-columns:repeat(2,1fr);}.content{padding:14px;}.topbar{padding:0 14px;}}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="layout">
 
-  <header>
-    <div class="logo">TRADE<span>DESK</span></div>
-    <div class="header-right">
-      <span class="badge badge-live">● LIVE</span>
-      <span class="badge badge-date" id="currentDate"></span>
-    </div>
-  </header>
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="logo">TD</div>
+  <button class="nav active" onclick="sw('overview',this)">⬡<span class="tip">Overview</span></button>
+  <button class="nav" onclick="sw('options',this)">◈<span class="tip">Options</span></button>
+  <button class="nav" onclick="sw('equity',this)">◇<span class="tip">Equity</span></button>
+  <button class="nav" onclick="sw('commodity',this)">◆<span class="tip">Commodity</span></button>
+  <div class="div"></div>
+  <button class="nav" onclick="sw('trades',this)">≡<span class="tip">All Trades</span></button>
+  <button class="nav" onclick="sw('add',this)">+<span class="tip">Add Trade</span></button>
+</nav>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('overview')">Overview</button>
-    <button class="tab" onclick="switchTab('options')">Options</button>
-    <button class="tab" onclick="switchTab('equity')">Equity</button>
-    <button class="tab" onclick="switchTab('commodity')">Commodity</button>
-    <button class="tab" onclick="switchTab('trades')">All Trades</button>
-    <button class="tab" onclick="switchTab('add')">+ Add Trade</button>
+<!-- Main -->
+<div class="main">
+<div class="topbar">
+  <div>
+    <div class="pg-title" id="pgT">OVERVIEW</div>
+    <div class="pg-sub" id="pgS">Portfolio Performance</div>
   </div>
-
-  <!-- OVERVIEW -->
-  <div id="tab-overview" class="section active">
-    <div class="stats-grid" id="overviewStats"></div>
-    <div class="charts-row">
-      <div class="card">
-        <div class="card-title">
-          P&L Curve
-          <div class="period-btns">
-            <button class="period-btn active" onclick="setPeriod('1W',this)">1W</button>
-            <button class="period-btn" onclick="setPeriod('1M',this)">1M</button>
-            <button class="period-btn" onclick="setPeriod('3M',this)">3M</button>
-            <button class="period-btn" onclick="setPeriod('ALL',this)">ALL</button>
-          </div>
-        </div>
-        <div class="chart-wrap"><canvas id="pnlChart" height="200"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Segment Split</div>
-        <div class="donut-wrap">
-          <canvas id="donutChart" height="180" width="180"></canvas>
-          <div class="legend" id="donutLegend"></div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Recent Trades</div>
-      <div class="table-wrap" id="recentTradesTable"></div>
-    </div>
+  <div class="tr">
+    <div class="live"><div class="ldot"></div>LIVE</div>
+    <div class="dc" id="cd"></div>
   </div>
-
-  <!-- OPTIONS -->
-  <div id="tab-options" class="section">
-    <div class="stats-grid" id="optionsStats"></div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Options P&L</div>
-      <div class="chart-wrap"><canvas id="optionsChart" height="200"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Options Trades</div>
-      <div class="table-wrap" id="optionsTable"></div>
-    </div>
-  </div>
-
-  <!-- EQUITY -->
-  <div id="tab-equity" class="section">
-    <div class="stats-grid" id="equityStats"></div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Equity P&L</div>
-      <div class="chart-wrap"><canvas id="equityChart" height="200"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Equity Trades</div>
-      <div class="table-wrap" id="equityTable"></div>
-    </div>
-  </div>
-
-  <!-- COMMODITY -->
-  <div id="tab-commodity" class="section">
-    <div class="stats-grid" id="commodityStats"></div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">Commodity P&L</div>
-      <div class="chart-wrap"><canvas id="commodityChart" height="200"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Commodity Trades</div>
-      <div class="table-wrap" id="commodityTable"></div>
-    </div>
-  </div>
-
-  <!-- ALL TRADES -->
-  <div id="tab-trades" class="section">
-    <div class="filter-row">
-      <select class="filter-select" id="filterSegment" onchange="renderAllTrades()">
-        <option value="ALL">All Segments</option>
-        <option value="Options">Options</option>
-        <option value="Equity">Equity</option>
-        <option value="Commodity">Commodity</option>
-      </select>
-      <select class="filter-select" id="filterType" onchange="renderAllTrades()">
-        <option value="ALL">Buy & Sell</option>
-        <option value="BUY">Buy</option>
-        <option value="SELL">Sell</option>
-      </select>
-      <select class="filter-select" id="filterResult" onchange="renderAllTrades()">
-        <option value="ALL">All Results</option>
-        <option value="WIN">Winners</option>
-        <option value="LOSS">Losers</option>
-      </select>
-    </div>
-    <div class="card">
-      <div class="card-title" id="allTradesTitle">All Trades</div>
-      <div class="table-wrap" id="allTradesTable"></div>
-    </div>
-  </div>
-
-  <!-- ADD TRADE -->
-  <div id="tab-add" class="section">
-    <div class="card">
-      <div class="card-title">Add New Trade</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Date</label>
-          <input type="date" id="tradeDate">
-        </div>
-        <div class="form-group">
-          <label>Segment</label>
-          <select id="tradeSegment">
-            <option value="Options">Options</option>
-            <option value="Equity">Equity</option>
-            <option value="Commodity">Commodity</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Symbol</label>
-          <input type="text" id="tradeSymbol" placeholder="e.g. NIFTY, GOLD">
-        </div>
-        <div class="form-group">
-          <label>Type</label>
-          <select id="tradeType">
-            <option value="BUY">BUY</option>
-            <option value="SELL">SELL</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Qty / Lots</label>
-          <input type="number" id="tradeQty" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label>Entry Price</label>
-          <input type="number" id="tradeEntry" placeholder="0.00">
-        </div>
-        <div class="form-group">
-          <label>Exit Price</label>
-          <input type="number" id="tradeExit" placeholder="0.00">
-        </div>
-        <div class="form-group">
-          <label>P&L (₹)</label>
-          <input type="number" id="tradePnl" placeholder="Auto or manual">
-        </div>
-        <div class="form-group">
-          <label>Notes</label>
-          <input type="text" id="tradeNotes" placeholder="Optional">
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="addTrade()">Add Trade</button>
-    </div>
-  </div>
-
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-<script>
-// ============ DATA ============
-let trades = JSON.parse(localStorage.getItem('trades') || '[]');
+<div class="content">
 
-// Sample data if empty
-if (trades.length === 0) {
-  trades = [
-    { id: 1, date: '2026-03-01', segment: 'Options', symbol: 'NIFTY CE', type: 'BUY', qty: 50, entry: 120, exit: 185, pnl: 3250, notes: 'Breakout trade' },
-    { id: 2, date: '2026-03-03', segment: 'Options', symbol: 'BANKNIFTY PE', type: 'BUY', qty: 25, entry: 80, exit: 45, pnl: -875, notes: 'Stop hit' },
-    { id: 3, date: '2026-03-05', segment: 'Equity', symbol: 'RELIANCE', type: 'BUY', qty: 10, entry: 2850, exit: 2920, pnl: 700, notes: '' },
-    { id: 4, date: '2026-03-07', segment: 'Commodity', symbol: 'GOLD', type: 'SELL', qty: 1, entry: 87500, exit: 87100, pnl: 400, notes: 'Resistance sell' },
-    { id: 5, date: '2026-03-10', segment: 'Options', symbol: 'NIFTY PE', type: 'BUY', qty: 50, entry: 95, exit: 160, pnl: 3250, notes: 'Put buy on breakdown' },
-    { id: 6, date: '2026-03-12', segment: 'Equity', symbol: 'TCS', type: 'BUY', qty: 5, entry: 3900, exit: 3820, pnl: -400, notes: 'Loss' },
-    { id: 7, date: '2026-03-14', segment: 'Commodity', symbol: 'SILVER', type: 'BUY', qty: 1, entry: 95000, exit: 96200, pnl: 1200, notes: '' },
-    { id: 8, date: '2026-03-17', segment: 'Options', symbol: 'FINNIFTY CE', type: 'BUY', qty: 40, entry: 55, exit: 110, pnl: 2200, notes: '' },
-    { id: 9, date: '2026-03-19', segment: 'Equity', symbol: 'INFY', type: 'BUY', qty: 20, entry: 1650, exit: 1700, pnl: 1000, notes: '' },
-    { id: 10, date: '2026-03-21', segment: 'Commodity', symbol: 'CRUDEOIL', type: 'SELL', qty: 1, entry: 6800, exit: 7050, pnl: -250, notes: 'Bad trade' },
-    { id: 11, date: '2026-03-24', segment: 'Options', symbol: 'NIFTY CE', type: 'BUY', qty: 50, entry: 140, exit: 95, pnl: -2250, notes: '' },
-    { id: 12, date: '2026-03-26', segment: 'Equity', symbol: 'HDFC', type: 'BUY', qty: 8, entry: 1750, exit: 1810, pnl: 480, notes: '' },
-  ];
-  saveTrades();
-}
-
-function saveTrades() {
-  localStorage.setItem('trades', JSON.stringify(trades));
-}
-
-// ============ UTILS ============
-function fmt(n) {
-  return (n >= 0 ? '+' : '') + '₹' + Math.abs(n).toLocaleString('en-IN');
-}
-
-function fmtPlain(n) {
-  return '₹' + Math.abs(n).toLocaleString('en-IN');
-}
-
-function getSegmentTrades(seg) {
-  if (seg === 'ALL') return trades;
-  return trades.filter(t => t.segment === seg);
-}
-
-function calcStats(arr) {
-  const total = arr.reduce((s, t) => s + t.pnl, 0);
-  const wins = arr.filter(t => t.pnl > 0);
-  const losses = arr.filter(t => t.pnl < 0);
-  const winRate = arr.length ? ((wins.length / arr.length) * 100).toFixed(1) : 0;
-  const avgWin = wins.length ? wins.reduce((s, t) => s + t.pnl, 0) / wins.length : 0;
-  const avgLoss = losses.length ? losses.reduce((s, t) => s + t.pnl, 0) / losses.length : 0;
-  const rr = avgLoss !== 0 ? Math.abs(avgWin / avgLoss).toFixed(2) : '—';
-  return { total, wins: wins.length, losses: losses.length, winRate, avgWin, avgLoss, rr, count: arr.length };
-}
-
-function tagClass(seg) {
-  if (seg === 'Options') return 'tag-options';
-  if (seg === 'Equity') return 'tag-equity';
-  return 'tag-commodity';
-}
-
-// ============ STATS CARDS ============
-function renderStats(containerId, arr) {
-  const s = calcStats(arr);
-  const el = document.getElementById(containerId);
-  el.innerHTML = `
-    <div class="stat-card ${s.total >= 0 ? 'green' : 'red'}">
-      <div class="stat-label">Total P&L</div>
-      <div class="stat-value ${s.total >= 0 ? 'green-text' : 'red-text'}">${fmt(s.total)}</div>
-      <div class="stat-sub">${s.count} trades</div>
+<!-- OVERVIEW -->
+<div id="tab-overview" class="section active">
+  <div class="sg" id="ov-stats"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch">
+        <span class="ct">Cumulative P&amp;L</span>
+        <div class="pg">
+          <button class="pb active" onclick="sp('1W',this,'pnlC',null)">1W</button>
+          <button class="pb" onclick="sp('1M',this,'pnlC',null)">1M</button>
+          <button class="pb" onclick="sp('3M',this,'pnlC',null)">3M</button>
+          <button class="pb" onclick="sp('ALL',this,'pnlC',null)">ALL</button>
+        </div>
+      </div>
+      <div class="cb2"><canvas id="pnlC" height="175"></canvas></div>
     </div>
-    <div class="stat-card blue">
-      <div class="stat-label">Win Rate</div>
-      <div class="stat-value blue-text">${s.winRate}%</div>
-      <div class="stat-sub">${s.wins}W / ${s.losses}L</div>
+    <div class="card">
+      <div class="ch"><span class="ct">Segment Split</span></div>
+      <div class="cb2">
+        <div class="di">
+          <div class="dcw">
+            <canvas id="donutC" width="130" height="130"></canvas>
+            <div class="dcc"><div class="dcv" id="dTot"></div><div class="dcl">TOTAL</div></div>
+          </div>
+          <div class="dl" id="dLeg"></div>
+        </div>
+      </div>
     </div>
-    <div class="stat-card green">
-      <div class="stat-label">Avg Win</div>
-      <div class="stat-value green-text">${s.wins ? fmtPlain(s.avgWin) : '—'}</div>
-      <div class="stat-sub">per winning trade</div>
-    </div>
-    <div class="stat-card red">
-      <div class="stat-label">Avg Loss</div>
-      <div class="stat-value red-text">${s.losses ? fmtPlain(s.avgLoss) : '—'}</div>
-      <div class="stat-sub">per losing trade</div>
-    </div>
-    <div class="stat-card yellow">
-      <div class="stat-label">Risk:Reward</div>
-      <div class="stat-value yellow-text">${s.rr}</div>
-      <div class="stat-sub">avg R:R ratio</div>
-    </div>
-  `;
-}
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct">Recent Activity</span></div>
+    <div class="tc" id="recT"></div>
+  </div>
+</div>
 
-// ============ TA
+<!-- OPTIONS -->
+<div id="tab-options" class="section">
+  <div class="sh">
+    <div class="shicon" style="background:var(--violet-dim)">◈</div>
+    <div><div class="shname" style="color:var(--violet)">OPTIONS</div><div class="shdesc">Derivatives · Calls &amp; Puts</div></div>
+  </div>
+  <div class="sg" id="op-stats"></div>
+  <div class="card g1">
+    <div class="ch"><span class="ct">Options P&amp;L</span>
+      <div class="pg">
+        <button class="pb active" onclick="sps('1W',this,'opC','Options')">1W</button>
+        <button class="pb" onclick="sps('1M',this,'opC','Options')">1M</button>
+        <button class="pb" onclick="sps('ALL',this,'opC','Options')">ALL</button>
+      </div>
+    </div>
+    <div class="cb2"><canvas id="opC" height="155"></canvas></div>
+  </div>
+  <div class="card"><div class="ch"><span class="ct">Options Trades</span></div><div class="tc" id="opT"></div></div>
+</div>
+
+<!-- EQUITY -->
+<div id="tab-equity" class="section">
+  <div class="sh">
+    <div class="shicon" style="background:var(--blue-dim)">◇</div>
+    <div><div class="shname" style="color:var(--blue)">EQUITY</div><div class="shdesc">Stocks · Cash Segment</div></div>
+  </div>
+  <div class="sg" id="eq-stats"></div>
+  <div class="card g1">
+    <div class="ch"><span class="ct">Equity P&amp;L</span>
+      <div class="pg">
+        <button class="pb active" onclick="sps('1W',this,'eqC','Equity')">1W</button>
+        <button class="pb" onclick="sps('1M',this,'eqC','Equity')">1M</button>
+        <button class="pb" onclick="sps('ALL',this,'eqC','Equity')">ALL</button>
+      </div>
+    </div>
+    <div class="cb2"><canvas id="eqC" height="155"></canvas></div>
+  </div>
+  <div class="card"><div class="ch"><span class="ct">Equity Trades</span></div><div class="tc" id="eqT"></div></div>
+</div>
+
+<!-- COMMODITY -->
+<div id="tab-commodity" class="section">
+  <div class="sh">
+    <div class="shicon" style="background:var(--amber-dim)">◆</div>
+    <div><div class="shname" style="color:var(--amber)">COMMODITY</div><div class="shdesc">Gold · Silver · CrudeOil</div></div>
+  </div>
+  <div class="sg" id="co-stats"></div>
+  <div class="card g1">
+    <div class="ch"><span class="ct">Commodity P&amp;L</span>
+      <div class="pg">
+        <button class="pb active" onclick="sps('1W',this,'coC','Commodity')">1W</button>
+        <button class="pb" onclick="sps('1M',this,'coC','Commodity')">1M</button>
+        <button class="pb" onclick="sps('ALL',this,'coC','Commodity')">ALL</button>
+      </div>
+    </div>
+    <div class="cb2"><canvas id="coC" height="155"></canvas></div>
+  </div>
+  <div class="card"><div class="ch"><span class="ct">Commodity Trades</span></div><div class="tc" id="coT"></div></div>
+</div>
+
+<!-- ALL TRADES -->
+<div id="tab-trades" class="section">
+  <div class="fb">
+    <select class="fs" id="fS" onchange="rat()">
+      <option value="ALL">All Segments</option>
+      <option value="Options">Options</option>
+      <option value="Equity">Equity</option>
+      <option value="Commodity">Commodity</option>
+    </select>
+    <select class="fs" id="fT" onchange="rat()">
+      <option value="ALL">Buy &amp; Sell</option>
+      <option value="BUY">Buy Only</option>
+      <option value="SELL">Sell Only</option>
+    </select>
+    <select class="fs" id="fR" onchange="rat()">
+      <option value="ALL">All Results</option>
+      <option value="WIN">Winners</option>
+      <option value="LOSS">Losers</option>
+    </select>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct" id="atc">All Trades</span></div>
+    <div class="tc" id="atT"></div>
+  </div>
+</div>
+
+<!-- ADD TRADE -->
+<div id="tab-add" class="section">
+  <div class="card">
+    <div class="ch"><span class="ct">New Position Entry</span></div>
+    <div class="cb2">
+      <div class="ft">Trade Details</div>
+      <div class="fg">
+        <div><label class="fl">Date</label><input type="date" class="fi" id="xD"></div>
+        <div><label class="fl">Segment</label><select class="fse" id="xSeg"><option value="Options">Options</option><option value="Equity">Equity</option><option value="Commodity">Commodity</option></select></div>
+        <div><label class="fl">Symbol</label><input type="text" class="fi" id="xSym" placeholder="NIFTY, GOLD, TCS..."></div>
+        <div><label class="fl">Direction</label><select class="fse" id="xDir"><option value="BUY">BUY</option><option value="SELL">SELL</option></select></div>
+        <div><label class="fl">Qty / Lots</label><input type="number" class="fi" id="xQ" placehold

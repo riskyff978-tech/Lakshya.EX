@@ -7,185 +7,226 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
-
 <style>
 :root{
---bg:#080810;--bg1:#0d0d1a;--bg2:#111120;
---green:#0fea8e;--red:#ff4565;--blue:#3d8bff;
---text:#f0f0f8;--text2:#9898b0
+--bg:#080810;
+--bg1:#0d0d1a;
+--bg2:#111120;
+--green:#0fea8e;
+--red:#ff4565;
+--text:#f0f0f8;
+--text2:#9898b0;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans'}
-.sidebar{width:70px;position:fixed;height:100%;background:var(--bg1)}
-.nav{padding:14px;text-align:center;color:var(--text2);cursor:pointer}
+
+.sidebar{
+width:70px;height:100vh;position:fixed;background:var(--bg1);
+display:flex;flex-direction:column;align-items:center;padding-top:20px
+}
+.nav{
+padding:14px;color:var(--text2);cursor:pointer
+}
 .nav.active,.nav:hover{color:var(--green)}
+
 .main{margin-left:70px;padding:20px}
-.card{background:var(--bg2);padding:15px;border-radius:12px;margin-bottom:15px}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.stat{background:#161628;padding:10px;border-radius:8px}
-.green{color:var(--green)}.red{color:var(--red)}
+
+.card{
+background:var(--bg2);
+border-radius:12px;
+padding:15px;
+margin-bottom:15px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
+}
+
+.stat{
+background:#161628;
+padding:10px;
+border-radius:8px;
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+
 table{width:100%;border-collapse:collapse}
 td,th{padding:10px;border-bottom:1px solid #222}
-input,select{width:100%;padding:10px;background:#161628;border:1px solid #333;color:#fff;margin-bottom:8px}
-button{background:var(--green);border:none;padding:10px;border-radius:6px;cursor:pointer}
+
+input,select{
+width:100%;
+padding:10px;
+background:#161628;
+border:1px solid #333;
+color:#fff;
+margin-bottom:8px;
+}
+
+button{
+background:var(--green);
+border:none;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-  <div class="nav active" onclick="sw('overview',this)">OV</div>
-  <div class="nav" onclick="sw('options',this)">OP</div>
-  <div class="nav" onclick="sw('equity',this)">EQ</div>
-  <div class="nav" onclick="sw('commodity',this)">CO</div>
-  <div class="nav" onclick="sw('trades',this)">TR</div>
-  <div class="nav" onclick="sw('add',this)">+</div>
+<div class="nav active" onclick="sw('overview',this)">OV</div>
+<div class="nav" onclick="sw('trades',this)">TR</div>
+<div class="nav" onclick="sw('add',this)">+</div>
 </div>
 
 <div class="main">
 
+<!-- OVERVIEW -->
 <div id="overview" class="card">
 <h2>Overview</h2>
 <div class="grid" id="stats"></div>
 <canvas id="chart"></canvas>
 </div>
 
-<div id="options" class="card" style="display:none"><h3>Options</h3><div id="opT"></div></div>
-<div id="equity" class="card" style="display:none"><h3>Equity</h3><div id="eqT"></div></div>
-<div id="commodity" class="card" style="display:none"><h3>Commodity</h3><div id="coT"></div></div>
-
+<!-- TRADES -->
 <div id="trades" class="card" style="display:none">
 <h3>All Trades</h3>
-<select id="fSeg" onchange="renderAll()">
+<select id="filter" onchange="renderAll()">
 <option value="ALL">All</option>
-<option>Options</option>
-<option>Equity</option>
-<option>Commodity</option>
+<option value="WIN">Winning</option>
+<option value="LOSS">Loss</option>
 </select>
-<div id="allT"></div>
+<div id="table"></div>
 </div>
 
+<!-- ADD -->
 <div id="add" class="card" style="display:none">
 <h3>Add Trade</h3>
-<input type="date" id="xD">
-<select id="xSeg"><option>Options</option><option>Equity</option><option>Commodity</option></select>
-<input id="xSym" placeholder="Symbol">
-<select id="xDir"><option>BUY</option><option>SELL</option></select>
-<input type="number" id="xQ" placeholder="Qty">
-<input type="number" id="xEn" placeholder="Entry">
-<input type="number" id="xEx" placeholder="Exit">
+
+<input type="date" id="d">
+<input id="sym" placeholder="Symbol">
+<select id="dir">
+<option>BUY</option>
+<option>SELL</option>
+</select>
+<input type="number" id="qty" placeholder="Qty">
+<input type="number" id="en" placeholder="Entry">
+<input type="number" id="ex" placeholder="Exit">
+
 <button onclick="addTrade()">Add Trade</button>
+
 </div>
 
 </div>
+
+<!-- CHART -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <script>
 
-/* ===== STORAGE FIX ===== */
+/* ===== STORAGE SAFE ===== */
 let T;
-try{T=JSON.parse(localStorage.getItem('td_full')||'null')}catch(e){T=null}
+try{
+T=JSON.parse(localStorage.getItem("td_pro"))
+}catch(e){T=null}
 
 if(!T){
 T=[
-{id:1,date:'2026-03-01',segment:'Options',symbol:'NIFTY',type:'BUY',qty:50,entry:100,exit:150,pnl:2500},
-{id:2,date:'2026-03-02',segment:'Equity',symbol:'TCS',type:'BUY',qty:10,entry:3500,exit:3400,pnl:-1000}
+{id:1,date:'2026-03-01',symbol:'NIFTY',type:'BUY',qty:50,entry:100,exit:150,pnl:2500},
+{id:2,date:'2026-03-02',symbol:'BANKNIFTY',type:'BUY',qty:25,entry:80,exit:60,pnl:-500}
 ];
 save();
 }
 
-function save(){localStorage.setItem('td_full',JSON.stringify(T))}
+function save(){
+localStorage.setItem("td_pro",JSON.stringify(T))
+}
 
 /* ===== NAV ===== */
 function sw(tab,el){
-document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'))
-if(el)el.classList.add('active')
+document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"))
+el.classList.add("active")
 
-;['overview','options','equity','commodity','trades','add']
-.forEach(id=>document.getElementById(id).style.display='none')
+document.getElementById("overview").style.display="none"
+document.getElementById("trades").style.display="none"
+document.getElementById("add").style.display="none"
 
-document.getElementById(tab).style.display='block'
-}
-
-/* ===== CALCULATIONS ===== */
-function calc(arr){
-const tot=arr.reduce((s,t)=>s+t.pnl,0)
-const w=arr.filter(t=>t.pnl>0)
-const l=arr.filter(t=>t.pnl<0)
-
-return{
-tot,
-wr:arr.length?((w.length/arr.length)*100).toFixed(1):0,
-aw:w.length?(w.reduce((s,t)=>s+t.pnl,0)/w.length):0,
-al:l.length?(l.reduce((s,t)=>s+t.pnl,0)/l.length):0,
-trades:arr.length
-}
+document.getElementById(tab).style.display="block"
 }
 
 /* ===== STATS ===== */
-function renderStats(){
-const s=calc(T)
-stats.innerHTML=`
-<div class="stat ${s.tot>=0?'green':'red'}">P&L ₹${s.tot}</div>
-<div class="stat">WinRate ${s.wr}%</div>
-<div class="stat">AvgWin ₹${s.aw.toFixed(0)}</div>
-<div class="stat">AvgLoss ₹${s.al.toFixed(0)}</div>
-<div class="stat">Trades ${s.trades}</div>`
+function stats(){
+let tot=T.reduce((a,b)=>a+b.pnl,0)
+let win=T.filter(t=>t.pnl>0)
+let loss=T.filter(t=>t.pnl<0)
+
+document.getElementById("stats").innerHTML=`
+<div class="stat ${tot>=0?'green':'red'}">₹${tot}</div>
+<div class="stat">Win ${win.length}</div>
+<div class="stat">Loss ${loss.length}</div>
+<div class="stat">Trades ${T.length}</div>
+<div class="stat">WR ${(win.length/T.length*100||0).toFixed(1)}%</div>
+`
 }
 
 /* ===== TABLE ===== */
-function makeTable(arr){
-if(!arr.length)return "No trades"
-let h="<table><tr><th>Date</th><th>Seg</th><th>Symbol</th><th>PnL</th><th></th></tr>"
+function renderAll(){
+let f=document.getElementById("filter").value
+let arr=T
+
+if(f==="WIN") arr=T.filter(t=>t.pnl>0)
+if(f==="LOSS") arr=T.filter(t=>t.pnl<0)
+
+let h="<table><tr><th>Date</th><th>Symbol</th><th>PnL</th><th></th></tr>"
+
 arr.slice().reverse().forEach(t=>{
-h+=`<tr>
+h+=`
+<tr>
 <td>${t.date}</td>
-<td>${t.segment}</td>
 <td>${t.symbol}</td>
 <td class="${t.pnl>=0?'green':'red'}">₹${t.pnl}</td>
 <td><button onclick="del(${t.id})">X</button></td>
 </tr>`
 })
+
 h+="</table>"
-return h
+
+document.getElementById("table").innerHTML=h
 }
 
-/* ===== RENDER ===== */
-function renderAll(){
-const f=fSeg.value
-const arr=f==='ALL'?T:T.filter(t=>t.segment===f)
-allT.innerHTML=makeTable(arr)
-}
-
-function renderSeg(){
-opT.innerHTML=makeTable(T.filter(t=>t.segment==='Options'))
-eqT.innerHTML=makeTable(T.filter(t=>t.segment==='Equity'))
-coT.innerHTML=makeTable(T.filter(t=>t.segment==='Commodity'))
-}
-
-/* ===== ADD TRADE FIX ===== */
+/* ===== ADD TRADE FIXED ===== */
 function addTrade(){
-const d=xD.value
-const sg=xSeg.value
-const sym=xSym.value.trim().toUpperCase()
-const dir=xDir.value
-const q=parseFloat(xQ.value)||0
-const en=parseFloat(xEn.value)||0
-const ex=parseFloat(xEx.value)||0
+const d=document.getElementById("d").value
+const sym=document.getElementById("sym").value
+const dir=document.getElementById("dir").value
+const qty=parseFloat(document.getElementById("qty").value)||0
+const en=parseFloat(document.getElementById("en").value)||0
+const ex=parseFloat(document.getElementById("ex").value)||0
 
-if(!d||!sym||q<=0){
+if(!d||!sym||qty<=0){
 alert("Fill properly")
 return
 }
 
-const pnl=(ex-en)*q*(dir==='BUY'?1:-1)
+const pnl=(ex-en)*qty*(dir==="BUY"?1:-1)
 
-T.push({id:Date.now(),date:d,segment:sg,symbol:sym,type:dir,qty:q,entry:en,exit:ex,pnl})
+T.push({
+id:Date.now(),
+date:d,
+symbol:sym,
+type:dir,
+qty,
+entry:en,
+exit:ex,
+pnl
+})
 
 save()
 init()
-
-xSym.value=xQ.value=xEn.value=xEx.value=""
 }
 
 /* ===== DELETE ===== */
@@ -195,11 +236,16 @@ save()
 init()
 }
 
-/* ===== CHART ===== */
-let chart;
+/* ===== CHART FIX ===== */
+let chart
+
 function renderChart(){
-const el=document.getElementById('chart')
-if(!el) return
+
+const canvas=document.getElementById("chart")
+if(!canvas) return
+
+const ctx=canvas.getContext("2d")
+if(!ctx) return
 
 let c=0
 const labels=T.map(t=>t.date)
@@ -207,23 +253,36 @@ const data=T.map(t=>{c+=t.pnl;return c})
 
 if(chart) chart.destroy()
 
-chart=new Chart(el,{
+chart=new Chart(ctx,{
 type:'line',
-data:{labels,datasets:[{data,borderColor:'#0fea8e',tension:.3}]},
-options:{plugins:{legend:{display:false}}}
+data:{
+labels,
+datasets:[{
+data,
+borderColor:"#0fea8e",
+tension:.3
+}]
+},
+options:{
+plugins:{legend:{display:false}}
+}
 })
 }
 
-/* ===== INIT FIX ===== */
+/* ===== INIT ===== */
 function init(){
-renderStats()
+stats()
 renderAll()
-renderSeg()
 renderChart()
+
+setTimeout(()=>{
+window.dispatchEvent(new Event("resize"))
+},200)
 }
 
+/* ===== START ===== */
 document.addEventListener("DOMContentLoaded",()=>{
-xD.value=new Date().toISOString().slice(0,10)
+document.getElementById("d").value=new Date().toISOString().slice(0,10)
 init()
 })
 

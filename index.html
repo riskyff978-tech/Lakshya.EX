@@ -5,120 +5,120 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TradeDesk Pro</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
 <style>
-body{margin:0;background:#080810;color:#fff;font-family:'DM Sans'}
-.sidebar{position:fixed;width:70px;height:100%;background:#0d0d1a;padding-top:20px}
-.nav{color:#aaa;padding:12px;text-align:center;cursor:pointer}
-.nav:hover{color:#0fea8e}
+:root{
+--bg:#080810;--bg1:#0d0d1a;--bg2:#111120;
+--green:#0fea8e;--red:#ff4565;--blue:#3d8bff;
+--text:#f0f0f8;--text2:#9898b0
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans'}
+.sidebar{width:70px;position:fixed;height:100%;background:var(--bg1)}
+.nav{padding:14px;text-align:center;color:var(--text2);cursor:pointer}
+.nav.active,.nav:hover{color:var(--green)}
 .main{margin-left:70px;padding:20px}
-.card{background:#111120;border-radius:10px;padding:15px;margin-bottom:15px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:var(--bg2);padding:15px;border-radius:12px;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .stat{background:#161628;padding:10px;border-radius:8px}
-.green{color:#0fea8e}
-.red{color:#ff4565}
+.green{color:var(--green)}.red{color:var(--red)}
 table{width:100%;border-collapse:collapse}
-td,th{padding:8px;border-bottom:1px solid #222}
-input,select{width:100%;padding:8px;background:#161628;border:1px solid #333;color:#fff;margin-bottom:8px}
-button{background:#0fea8e;border:none;padding:10px;cursor:pointer}
+td,th{padding:10px;border-bottom:1px solid #222}
+input,select{width:100%;padding:10px;background:#161628;border:1px solid #333;color:#fff;margin-bottom:8px}
+button{background:var(--green);border:none;padding:10px;border-radius:6px;cursor:pointer}
 </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-  <div class="nav" onclick="sw('overview')">OV</div>
-  <div class="nav" onclick="sw('options')">OP</div>
-  <div class="nav" onclick="sw('equity')">EQ</div>
-  <div class="nav" onclick="sw('commodity')">CO</div>
-  <div class="nav" onclick="sw('trades')">TR</div>
-  <div class="nav" onclick="sw('add')">+</div>
+  <div class="nav active" onclick="sw('overview',this)">OV</div>
+  <div class="nav" onclick="sw('options',this)">OP</div>
+  <div class="nav" onclick="sw('equity',this)">EQ</div>
+  <div class="nav" onclick="sw('commodity',this)">CO</div>
+  <div class="nav" onclick="sw('trades',this)">TR</div>
+  <div class="nav" onclick="sw('add',this)">+</div>
 </div>
 
 <div class="main">
 
-<!-- OVERVIEW -->
 <div id="overview" class="card">
-  <h3>Overview</h3>
-  <div class="grid" id="stats"></div>
-  <canvas id="chart"></canvas>
+<h2>Overview</h2>
+<div class="grid" id="stats"></div>
+<canvas id="chart"></canvas>
 </div>
 
-<!-- SEGMENTS -->
-<div id="options" class="card" style="display:none"><h3>Options</h3><div id="optTable"></div></div>
-<div id="equity" class="card" style="display:none"><h3>Equity</h3><div id="eqTable"></div></div>
-<div id="commodity" class="card" style="display:none"><h3>Commodity</h3><div id="coTable"></div></div>
+<div id="options" class="card" style="display:none"><h3>Options</h3><div id="opT"></div></div>
+<div id="equity" class="card" style="display:none"><h3>Equity</h3><div id="eqT"></div></div>
+<div id="commodity" class="card" style="display:none"><h3>Commodity</h3><div id="coT"></div></div>
 
-<!-- ALL -->
 <div id="trades" class="card" style="display:none">
-  <h3>All Trades</h3>
-
-  <select id="filterSeg" onchange="renderAll()">
-    <option value="ALL">All</option>
-    <option>Options</option>
-    <option>Equity</option>
-    <option>Commodity</option>
-  </select>
-
-  <div id="allTable"></div>
+<h3>All Trades</h3>
+<select id="fSeg" onchange="renderAll()">
+<option value="ALL">All</option>
+<option>Options</option>
+<option>Equity</option>
+<option>Commodity</option>
+</select>
+<div id="allT"></div>
 </div>
 
-<!-- ADD -->
 <div id="add" class="card" style="display:none">
-  <h3>Add Trade</h3>
-  <input type="date" id="xD">
-  <select id="xSeg">
-    <option>Options</option>
-    <option>Equity</option>
-    <option>Commodity</option>
-  </select>
-  <input id="xSym" placeholder="Symbol">
-  <select id="xDir">
-    <option>BUY</option>
-    <option>SELL</option>
-  </select>
-  <input type="number" id="xQ" placeholder="Qty">
-  <input type="number" id="xEn" placeholder="Entry">
-  <input type="number" id="xEx" placeholder="Exit">
-  <button onclick="addTrade()">Add</button>
+<h3>Add Trade</h3>
+<input type="date" id="xD">
+<select id="xSeg"><option>Options</option><option>Equity</option><option>Commodity</option></select>
+<input id="xSym" placeholder="Symbol">
+<select id="xDir"><option>BUY</option><option>SELL</option></select>
+<input type="number" id="xQ" placeholder="Qty">
+<input type="number" id="xEn" placeholder="Entry">
+<input type="number" id="xEx" placeholder="Exit">
+<button onclick="addTrade()">Add Trade</button>
 </div>
 
 </div>
 
 <script>
 
-/* ===== STORAGE SAFE ===== */
+/* ===== STORAGE FIX ===== */
 let T;
-try{T=JSON.parse(localStorage.getItem('td3')||'null')}catch(e){T=null}
+try{T=JSON.parse(localStorage.getItem('td_full')||'null')}catch(e){T=null}
+
 if(!T){
 T=[
 {id:1,date:'2026-03-01',segment:'Options',symbol:'NIFTY',type:'BUY',qty:50,entry:100,exit:150,pnl:2500},
 {id:2,date:'2026-03-02',segment:'Equity',symbol:'TCS',type:'BUY',qty:10,entry:3500,exit:3400,pnl:-1000}
-];save();
+];
+save();
 }
-function save(){localStorage.setItem('td3',JSON.stringify(T))}
+
+function save(){localStorage.setItem('td_full',JSON.stringify(T))}
 
 /* ===== NAV ===== */
-function sw(id){
-['overview','options','equity','commodity','trades','add'].forEach(x=>{
-document.getElementById(x).style.display='none'
-});
-document.getElementById(id).style.display='block'
+function sw(tab,el){
+document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'))
+if(el)el.classList.add('active')
+
+;['overview','options','equity','commodity','trades','add']
+.forEach(id=>document.getElementById(id).style.display='none')
+
+document.getElementById(tab).style.display='block'
 }
 
-/* ===== CALC ===== */
-function calc(a){
-const tot=a.reduce((s,t)=>s+t.pnl,0)
-const w=a.filter(t=>t.pnl>0)
-const l=a.filter(t=>t.pnl<0)
+/* ===== CALCULATIONS ===== */
+function calc(arr){
+const tot=arr.reduce((s,t)=>s+t.pnl,0)
+const w=arr.filter(t=>t.pnl>0)
+const l=arr.filter(t=>t.pnl<0)
+
 return{
 tot,
-wr:a.length?((w.length/a.length)*100).toFixed(1):0,
+wr:arr.length?((w.length/arr.length)*100).toFixed(1):0,
 aw:w.length?(w.reduce((s,t)=>s+t.pnl,0)/w.length):0,
-al:l.length?(l.reduce((s,t)=>s+t.pnl,0)/l.length):0
+al:l.length?(l.reduce((s,t)=>s+t.pnl,0)/l.length):0,
+trades:arr.length
 }
 }
 
@@ -126,23 +126,23 @@ al:l.length?(l.reduce((s,t)=>s+t.pnl,0)/l.length):0
 function renderStats(){
 const s=calc(T)
 stats.innerHTML=`
-<div class="stat ${s.tot>=0?'green':'red'}">P&L: ${s.tot}</div>
-<div class="stat">WinRate: ${s.wr}%</div>
-<div class="stat">AvgWin: ${s.aw.toFixed(0)}</div>
-<div class="stat">AvgLoss: ${s.al.toFixed(0)}</div>
-`
+<div class="stat ${s.tot>=0?'green':'red'}">P&L ₹${s.tot}</div>
+<div class="stat">WinRate ${s.wr}%</div>
+<div class="stat">AvgWin ₹${s.aw.toFixed(0)}</div>
+<div class="stat">AvgLoss ₹${s.al.toFixed(0)}</div>
+<div class="stat">Trades ${s.trades}</div>`
 }
 
 /* ===== TABLE ===== */
 function makeTable(arr){
-if(!arr.length) return "No Data"
-let h="<table><tr><th>Date</th><th>Seg</th><th>Sym</th><th>PnL</th><th></th></tr>"
+if(!arr.length)return "No trades"
+let h="<table><tr><th>Date</th><th>Seg</th><th>Symbol</th><th>PnL</th><th></th></tr>"
 arr.slice().reverse().forEach(t=>{
 h+=`<tr>
 <td>${t.date}</td>
 <td>${t.segment}</td>
 <td>${t.symbol}</td>
-<td class="${t.pnl>=0?'green':'red'}">${t.pnl}</td>
+<td class="${t.pnl>=0?'green':'red'}">₹${t.pnl}</td>
 <td><button onclick="del(${t.id})">X</button></td>
 </tr>`
 })
@@ -152,18 +152,18 @@ return h
 
 /* ===== RENDER ===== */
 function renderAll(){
-const f=filterSeg.value
+const f=fSeg.value
 const arr=f==='ALL'?T:T.filter(t=>t.segment===f)
-allTable.innerHTML=makeTable(arr)
+allT.innerHTML=makeTable(arr)
 }
 
 function renderSeg(){
-optTable.innerHTML=makeTable(T.filter(t=>t.segment==='Options'))
-eqTable.innerHTML=makeTable(T.filter(t=>t.segment==='Equity'))
-coTable.innerHTML=makeTable(T.filter(t=>t.segment==='Commodity'))
+opT.innerHTML=makeTable(T.filter(t=>t.segment==='Options'))
+eqT.innerHTML=makeTable(T.filter(t=>t.segment==='Equity'))
+coT.innerHTML=makeTable(T.filter(t=>t.segment==='Commodity'))
 }
 
-/* ===== ADD ===== */
+/* ===== ADD TRADE FIX ===== */
 function addTrade(){
 const d=xD.value
 const sg=xSeg.value
@@ -173,13 +173,19 @@ const q=parseFloat(xQ.value)||0
 const en=parseFloat(xEn.value)||0
 const ex=parseFloat(xEx.value)||0
 
-if(!d||!sym||q<=0){alert("Fill correctly");return}
+if(!d||!sym||q<=0){
+alert("Fill properly")
+return
+}
 
 const pnl=(ex-en)*q*(dir==='BUY'?1:-1)
 
 T.push({id:Date.now(),date:d,segment:sg,symbol:sym,type:dir,qty:q,entry:en,exit:ex,pnl})
+
 save()
 init()
+
+xSym.value=xQ.value=xEn.value=xEx.value=""
 }
 
 /* ===== DELETE ===== */
@@ -190,17 +196,25 @@ init()
 }
 
 /* ===== CHART ===== */
-let chart
+let chart;
 function renderChart(){
+const el=document.getElementById('chart')
+if(!el) return
+
 let c=0
 const labels=T.map(t=>t.date)
 const data=T.map(t=>{c+=t.pnl;return c})
 
-if(chart)chart.destroy()
-chart=new Chart(chartEl,{type:'line',data:{labels,datasets:[{data,borderColor:'#0fea8e'}]}})
+if(chart) chart.destroy()
+
+chart=new Chart(el,{
+type:'line',
+data:{labels,datasets:[{data,borderColor:'#0fea8e',tension:.3}]},
+options:{plugins:{legend:{display:false}}}
+})
 }
 
-/* ===== INIT ===== */
+/* ===== INIT FIX ===== */
 function init(){
 renderStats()
 renderAll()
@@ -208,10 +222,8 @@ renderSeg()
 renderChart()
 }
 
-/* ===== START ===== */
 document.addEventListener("DOMContentLoaded",()=>{
 xD.value=new Date().toISOString().slice(0,10)
-window.chartEl=document.getElementById('chart')
 init()
 })
 

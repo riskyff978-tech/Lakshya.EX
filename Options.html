@@ -1,1 +1,104 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeDesk Pro - Options</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #07070f; 
+      color: #eeeef8; 
+      font-family: Arial, sans-serif; 
+      min-height: 100vh;
+    }
+    .sidebar { 
+      width: 70px; 
+      background: #0e0e1c; 
+      position: fixed; 
+      height: 100%; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding-top: 30px; 
+      gap: 20px; 
+      border-right: 1px solid #222;
+    }
+    .logo {
+      background: #00e87a; 
+      color: black; 
+      width: 45px; 
+      height: 45px; 
+      border-radius: 12px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: bold; 
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .s-nav { 
+      color: #888; 
+      font-size: 28px; 
+      text-decoration: none; 
+      padding: 12px; 
+      width: 100%; 
+      text-align: center; 
+      transition: 0.2s;
+    }
+    .s-nav:hover, .s-nav.active { 
+      color: #00e87a; 
+      background: #181830; 
+    }
+    .main { 
+      margin-left: 80px; 
+      padding: 30px; 
+    }
+    h1 { 
+      color: #c084fc; 
+      font-size: 28px; 
+      margin-bottom: 10px;
+    }
+    .card {
+      background: #131325; 
+      padding: 25px; 
+      border-radius: 14px; 
+      margin-top: 20px;
+      border: 1px solid #222;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">TD</div>
+    
+    <a href="index.html" class="s-nav">📊</a>
+    <a href="options.html" class="s-nav active">📈</a>
+    <a href="equity.html" class="s-nav">📉</a>
+    <a href="commodity.html" class="s-nav">🛢</a>
+    <a href="trades.html" class="s-nav">📋</a>
+    <a href="add.html" class="s-nav">➕</a>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main">
+    <h1>OPTIONS DASHBOARD</h1>
+    <p style="color:#888; margin-bottom:20px;">Derivatives • Calls & Puts</p>
+
+    <div class="card">
+      <h2 style="color:#c084fc; margin-bottom:15px;">Options P&L</h2>
+      <p style="font-size:24px; color:#00e87a;">+ ₹4,820</p>
+      <p style="color:#888; margin-top:10px;">12 Calls • 8 Puts</p>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <p>Options ka full chart aur table yahan aayega (baad mein add karenge).</p>
+      <p style="margin-top:15px; color:#666;">Abhi ke liye yeh test page hai.</p>
+    </div>
+  </div>
+
+</body>
+</html>

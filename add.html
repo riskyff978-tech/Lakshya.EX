@@ -67,33 +67,48 @@
   </div>
 
   <script>
-    function addTrade() {
-      const trade = {
-        id: Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        segment: document.getElementById('segment').value,
-        symbol: document.getElementById('symbol').value,
-        type: document.getElementById('type').value,
-        qty: parseFloat(document.getElementById('qty').value),
-        entry: parseFloat(document.getElementById('entry').value),
-        exit: parseFloat(document.getElementById('exit').value)
-      };
+  function addTrade() {
+    const segment = document.getElementById('segment').value;
+    const symbol = document.getElementById('symbol').value.trim();
+    const type = document.getElementById('type').value;
+    const qty = parseFloat(document.getElementById('qty').value);
+    const entry = parseFloat(document.getElementById('entry').value);
+    const exit = parseFloat(document.getElementById('exit').value);
 
-      // Calculate P&L
-      trade.pnl = trade.type === "BUY" 
-        ? (trade.exit - trade.entry) * trade.qty 
-        : (trade.entry - trade.exit) * trade.qty;
-
-      // Save to LocalStorage
-      let trades = JSON.parse(localStorage.getItem('trades') || '[]');
-      trades.unshift(trade);  // Naya trade top pe
-      localStorage.setItem('trades', JSON.stringify(trades));
-
-      alert(`✅ Trade Added Successfully!\nSymbol: \( {trade.symbol}\nP&L: ₹ \){trade.pnl.toFixed(2)}`);
-      
-      // Optional: Add hone ke baad form clear kar sakte ho
-      // document.getElementById('symbol').value = "";
+    if (!symbol || !qty || !entry || !exit) {
+      alert("Sab fields bharo!");
+      return;
     }
+
+    const pnl = (type === "BUY") 
+      ? (exit - entry) * qty 
+      : (entry - exit) * qty;
+
+    const trade = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('en-IN'),
+      segment: segment,
+      symbol: symbol,
+      type: type,
+      qty: qty,
+      entry: entry,
+      exit: exit,
+      pnl: parseFloat(pnl.toFixed(2))
+    };
+
+    // Data save kar rahe hain LocalStorage mein
+    let trades = JSON.parse(localStorage.getItem('trades') || '[]');
+    trades.unshift(trade);                    // Naya trade top pe
+    localStorage.setItem('trades', JSON.stringify(trades));
+
+    alert(`✅ Trade Added Successfully!\n\nSymbol: \( {symbol}\nP&L: ₹ \){trade.pnl}`);
+    
+    // Form clear kar do (optional)
+    document.getElementById('symbol').value = "";
+    document.getElementById('qty').value = "25";
+    document.getElementById('entry').value = "285.50";
+    document.getElementById('exit').value = "342.75";
+  }
   </script>
 </body>
 </html>

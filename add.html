@@ -75,14 +75,12 @@
     const entry = parseFloat(document.getElementById('entry').value);
     const exit = parseFloat(document.getElementById('exit').value);
 
-    if (!symbol || !qty || !entry || !exit) {
-      alert("Sab fields bharo!");
+    if (!symbol || isNaN(qty) || isNaN(entry) || isNaN(exit)) {
+      alert("Sab fields sahi se bharo!");
       return;
     }
 
-    const pnl = (type === "BUY") 
-      ? (exit - entry) * qty 
-      : (entry - exit) * qty;
+    const pnl = (type === "BUY") ? (exit - entry) * qty : (entry - exit) * qty;
 
     const trade = {
       id: Date.now(),
@@ -96,18 +94,15 @@
       pnl: parseFloat(pnl.toFixed(2))
     };
 
-    // Data save kar rahe hain LocalStorage mein
+    // Save to localStorage
     let trades = JSON.parse(localStorage.getItem('trades') || '[]');
-    trades.unshift(trade);                    // Naya trade top pe
+    trades.unshift(trade);
     localStorage.setItem('trades', JSON.stringify(trades));
 
-    alert(`✅ Trade Added Successfully!\n\nSymbol: \( {symbol}\nP&L: ₹ \){trade.pnl}`);
-    
-    // Form clear kar do (optional)
+    alert(`✅ Trade Added Successfully!\nSymbol: \( {symbol}\nP&L: ₹ \){trade.pnl}`);
+
+    // Form clear
     document.getElementById('symbol').value = "";
-    document.getElementById('qty').value = "25";
-    document.getElementById('entry').value = "285.50";
-    document.getElementById('exit').value = "342.75";
   }
   </script>
 </body>

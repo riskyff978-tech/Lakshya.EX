@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeDesk Pro - Add Trade</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: #07070f; 
+      color: #eeeef8; 
+      font-family: Arial, sans-serif; 
+      min-height: 100vh;
+    }
+    .sidebar { 
+      width: 70px; 
+      background: #0e0e1c; 
+      position: fixed; 
+      height: 100%; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding-top: 30px; 
+      gap: 20px; 
+      border-right: 1px solid #222;
+    }
+    .logo {
+      background: #00e87a; 
+      color: black; 
+      width: 45px; 
+      height: 45px; 
+      border-radius: 12px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: bold; 
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .s-nav { 
+      color: #888; 
+      font-size: 28px; 
+      text-decoration: none; 
+      padding: 12px; 
+      width: 100%; 
+      text-align: center; 
+      transition: 0.2s;
+    }
+    .s-nav:hover, .s-nav.active { 
+      color: #00e87a; 
+      background: #181830; 
+    }
+    .main { 
+      margin-left: 80px; 
+      padding: 30px; 
+    }
+    h1 { 
+      color: #00e87a; 
+      font-size: 28px; 
+      margin-bottom: 10px;
+    }
+    .card {
+      background: #131325; 
+      padding: 25px; 
+      border-radius: 14px; 
+      margin-top: 20px;
+      border: 1px solid #222;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: #181830;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+    }
+    .add-btn {
+      background: #00e87a;
+      color: black;
+      padding: 14px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+    }
+    .add-btn:hover {
+      background: #00ff8c;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">TD</div>
+    
+    <a href="index.html" class="s-nav">📊</a>
+    <a href="options.html" class="s-nav">📈</a>
+    <a href="equity.html" class="s-nav">📉</a>
+    <a href="commodity.html" class="s-nav">🛢</a>
+    <a href="trades.html" class="s-nav">📋</a>
+    <a href="add.html" class="s-nav active">➕</a>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main">
+    <h1>ADD NEW TRADE</h1>
+    <p style="color:#888; margin-bottom:25px;">Enter trade details below</p>
+
+    <div class="card">
+      <div class="form-group">
+        <label>Segment</label>
+        <select id="segment">
+          <option value="Options">Options</option>
+          <option value="Equity">Equity</option>
+          <option value="Commodity">Commodity</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Symbol</label>
+        <input type="text" id="symbol" placeholder="e.g. BANKNIFTY 45200 CE" value="BANKNIFTY 45200 CE">
+      </div>
+
+      <div class="form-group">
+        <label>Type</label>
+        <select id="type">
+          <option value="BUY">BUY</option>
+          <option value="SELL">SELL</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" id="qty" value="25">
+      </div>
+
+      <div class="form-group">
+        <label>Entry Price</label>
+        <input type="number" step="0.05" id="entry" value="285.50">
+      </div>
+
+      <div class="form-group">
+        <label>Exit Price</label>
+        <input type="number" step="0.05" id="exit" value="342.75">
+      </div>
+
+      <button class="add-btn" onclick="addTrade()">ADD TRADE TO PORTFOLIO</button>
+    </div>
+  </div>
+
+  <script>
+    function addTrade() {
+      const symbol = document.getElementById('symbol').value;
+      const type = document.getElementById('type').value;
+      const qty = document.getElementById('qty').value;
+      
+      if (!symbol || !qty) {
+        alert("Symbol aur Quantity fill karo!");
+        return;
+      }
+      
+      alert(`✅ Trade Added Successfully!\n\nSymbol: ${symbol}\nType: ${type}\nQuantity: ${qty}\n\n(Trade saved in portfolio)`);
+      
+      // Future mein yahan trades list update kar sakte hain
+    }
+  </script>
+
+</body>
+</html>

@@ -52,15 +52,17 @@ body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-h
 
 <div class="wrap">
   <!-- Sidebar -->
-  <nav class="sidebar">
-    <div class="s-logo">TD</div>
-    <button class="s-nav on" data-tab="overview">📊</button>
-    <button class="s-nav" data-tab="options">📈</button>
-    <button class="s-nav" data-tab="equity">📉</button>
-    <button class="s-nav" data-tab="commodity">🛢</button>
-    <button class="s-nav" data-tab="trades">📋</button>
-    <button class="s-nav" data-tab="add">➕</button>
-  </nav>
+  <!-- Sidebar - Multi Page ke liye -->
+<nav class="sidebar">
+  <div class="s-logo">TD</div>
+  
+  <a href="index.html" class="s-nav active">📊</a>
+  <a href="options.html" class="s-nav">📈</a>
+  <a href="equity.html" class="s-nav">📉</a>
+  <a href="commodity.html" class="s-nav">🛢</a>
+  <a href="trades.html" class="s-nav">📋</a>
+  <a href="add.html" class="s-nav">➕</a>
+</nav>
 
   <div class="main">
     <div class="topbar">
